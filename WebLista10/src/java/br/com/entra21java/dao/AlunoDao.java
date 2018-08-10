@@ -1,6 +1,7 @@
 package br.com.entra21java.dao;
 import br.com.entra21java.bean.AlunoBean;
 import br.com.entra21java.database.Conexao;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,4 +37,43 @@ public class AlunoDao {
         return -1;
     }
     
+    public boolean excluir(int id){
+        String sql = "DELETE FROM  alunos WHERE id = ?;";
+        Connection conexao = Conexao.obterConexao();
+        if(conexao!=null){
+            try{
+                PreparedStatement ps = conexao.prepareStatement(sql);
+                ps.setInt(1, id);
+                return ps.executeUpdate() ==1;
+            }catch(SQLException e){
+                e.printStackTrace();
+            }finally{Conexao.fecharConexao();}
+        }
+        return false;
+    }
+    
+    public boolean alterar(AlunoBean aluno){
+        Connection conexao = Conexao.obterConexao();
+        String sql = "UPDATE alunos"
+                +"\nSet nome = ?,codigo_matricula = ?,nota_1 = ?" +
+                "nota_2 = ?,nota_3 =?, frequencia = ? "+
+                "WHERE id = ?;";
+        if(conexao!= null){
+            try{
+                PreparedStatement ps = conexao.prepareStatement(sql);
+                ps.setString(1, aluno.getNome());
+                ps.setString(2, aluno.getCodigoDeMatricula());
+                ps.setFloat(3, aluno.getNota1());
+                ps.setFloat(4, aluno.getNota2());
+                ps.setFloat(5, aluno.getNota3());
+                ps.setByte(6, aluno.getFrequencia());
+                ps.setInt(7, aluno.getId());
+                return ps.executeUpdate() == 1;
+            }catch(SQLException e){
+                e.printStackTrace();
+            }finally{Conexao.fecharConexao();}
+        }
+        return false;
+    }
 }
+
