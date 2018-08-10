@@ -5,25 +5,28 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
  /* @author Márcio Pedro Schiehl
  */
 public class AlunoDao {
-    public int adicionar(AlunoBean alunos){
+    public int adicionar(AlunoBean aluno){
         String sql = "INSERT INTO alunos(id,nome,nota1,nota2,nota3,"
                 + "codigo_de_matricula ,frequencia)"
                 + "values(?,?,?,?,?,?,?)";
         try{
             PreparedStatement ps = Conexao.obterConexao().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             int quantidade = 1;
-            ps.setString(quantidade++, alunos.getNome());
-            ps.setFloat(quantidade++, alunos.getNota1());
-            ps.setFloat(quantidade++, alunos.getNota2());
-            ps.setFloat(quantidade++, alunos.getNota3());
-            ps.setString(quantidade++, alunos.getCodigoDeMatricula());
-            ps.setByte(quantidade++, alunos.getFrequencia());
+            ps.setString(quantidade++, aluno.getNome());
+            ps.setFloat(quantidade++, aluno.getNota1());
+            ps.setFloat(quantidade++, aluno.getNota2());
+            ps.setFloat(quantidade++, aluno.getNota3());
+            ps.setString(quantidade++, aluno.getCodigoDeMatricula());
+            ps.setByte(quantidade++, aluno.getFrequencia());
             ps.execute();
             ResultSet resultset = ps.getGeneratedKeys();
             if(resultset.next()){
@@ -75,5 +78,20 @@ public class AlunoDao {
         }
         return false;
     }
+    
+   public List<AlunoBean> obterTodos(){
+       List<AlunoBean> alunos = new ArrayList<>();
+       Connection conexao = Conexao.obterConexao();
+       if(conexao!=null){
+           String sql ="SELECT id, nome,nota1,nota2,nota3,"
+                   + "codigo_de_matricula,frequencia from alunos";
+           try{
+               Statement statement = conexao.createStatement();
+               statement.execute(sql);
+               ResultSet resultSet = statement.getResultSet();
+           }catch(SQLException e){e.printStackTrace();}
+           finally{Conexao.fecharConexao();}
+       }
+       return alunos;
+   }
 }
-
