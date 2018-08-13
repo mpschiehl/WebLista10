@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AlunoDao {
     public int adicionar(AlunoBean aluno){
-        String sql = "INSERT INTO alunos(id,nome,nota1,nota2,nota3,"
+        String sql = "INSERT INTO alunos(id,nome,nota_1,nota_2,nota_3,"
                 + "codigo_de_matricula ,frequencia)"
                 + "values(?,?,?,?,?,?,?)";
         try{
@@ -93,5 +93,28 @@ public class AlunoDao {
            finally{Conexao.fecharConexao();}
        }
        return alunos;
+   }
+   public AlunoBean obterAlunoPeloId (int id){
+    String sql = "SELECT * FROM alunos WHERE id = ? ";
+       Connection conexao = Conexao.obterConexao();
+        if(conexao!=null){
+           try{
+               PreparedStatement ps = Conexao.obterConexao().prepareStatement(sql);
+               ps.setInt(1,id);
+               ps.execute();
+               ResultSet resultSet = ps.getResultSet();
+               if(resultSet.next()){
+                   AlunoBean aluno = new AlunoBean();
+                   aluno.setId(resultSet.getInt("id"));
+                   aluno.setNome(resultSet.getString("nome"));
+                   aluno.setNota1(resultSet.getFloat("nota1"));
+                   aluno.setNota2(resultSet.getFloat("nota2"));
+                   aluno.setNota3(resultSet.getFloat("nota3"));
+                   aluno.setCodigoDeMatricula(resultSet.getString("codigo_de_matricula"));
+                   aluno.setFrequencia(resultSet.getByte("frequencia"));
+                   return aluno;
+               }
+           }catch(SQLException e) {e.printStackTrace();}finally{Conexao.fecharConexao();}
+          }return null;
    }
 }
